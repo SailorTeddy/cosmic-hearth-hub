@@ -1,0 +1,220 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * The Nichols Estate — "Cosmic Family Hearth" design system.
+ * Deep obsidian/indigo space, warm liquid gold + champagne accents.
+ * All colors use oklch. Never hardcode color utilities in components.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 6px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-champagne: var(--champagne);
+  --color-ember: var(--ember);
+  --color-nebula: var(--nebula);
+  --color-glass: var(--glass);
+  --color-glass-border: var(--glass-border);
+
+  --shadow-glow: var(--shadow-glow);
+  --shadow-glow-strong: var(--shadow-glow-strong);
+  --shadow-panel: var(--shadow-panel);
+}
+
+:root {
+  --radius: 20px;
+
+  --background: oklch(0.06 0.02 280);
+  --foreground: oklch(0.96 0.015 85);
+
+  --card: oklch(0.14 0.035 280 / 55%);
+  --card-foreground: oklch(0.96 0.015 85);
+  --popover: oklch(0.12 0.04 280 / 94%);
+  --popover-foreground: oklch(0.96 0.015 85);
+
+  --primary: oklch(0.78 0.13 85);
+  --primary-foreground: oklch(0.16 0.04 280);
+
+  --secondary: oklch(0.28 0.055 285 / 70%);
+  --secondary-foreground: oklch(0.95 0.02 85);
+
+  --muted: oklch(0.26 0.05 285 / 60%);
+  --muted-foreground: oklch(0.76 0.03 85);
+
+  --accent: oklch(0.86 0.09 88);
+  --accent-foreground: oklch(0.16 0.04 280);
+
+  --destructive: oklch(0.62 0.19 25);
+  --destructive-foreground: oklch(0.97 0.01 85);
+
+  --border: oklch(0.78 0.13 85 / 22%);
+  --input: oklch(0.78 0.13 85 / 18%);
+  --ring: oklch(0.78 0.13 85 / 55%);
+
+  --gold: oklch(0.78 0.13 85);
+  --gold-soft: oklch(0.86 0.075 88);
+  --champagne: oklch(0.92 0.045 90);
+  --ember: oklch(0.72 0.14 55);
+  --nebula: oklch(0.42 0.15 295);
+
+  --glass: oklch(0.16 0.04 282 / 42%);
+  --glass-border: oklch(0.9 0.09 88 / 18%);
+
+  --shadow-glow: 0 0 28px color-mix(in oklab, var(--gold) 22%, transparent);
+  --shadow-glow-strong: 0 0 60px color-mix(in oklab, var(--gold) 34%, transparent);
+  --shadow-panel:
+    0 24px 70px -30px oklch(0 0 0 / 75%),
+    inset 0 1px 0 color-mix(in oklab, var(--champagne) 16%, transparent);
+}
+
+.dark {
+  --background: oklch(0.06 0.02 280);
+  --foreground: oklch(0.96 0.015 85);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+@utility glass-panel {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(22px) saturate(135%);
+  box-shadow: var(--shadow-panel);
+}
+
+@utility gold-text {
+  background-image: linear-gradient(
+    100deg,
+    var(--champagne),
+    var(--gold) 45%,
+    var(--ember) 78%,
+    var(--champagne)
+  );
+  background-clip: text;
+  color: transparent;
+}
+
+@utility hearth-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-float-soft {
+  animation: float-soft 7s ease-in-out infinite;
+}
+
+@utility animate-pulse-glow {
+  animation: pulse-glow 3.5s ease-in-out infinite;
+}
+
+@utility animate-rise-in {
+  animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
