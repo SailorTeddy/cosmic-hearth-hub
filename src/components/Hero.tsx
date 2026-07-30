@@ -52,10 +52,10 @@ export function Hero() {
       >
         <img
           src={crest}
-          alt="The Nichols Estate cosmic hearth crest"
+          alt="The Nichols Estate black hole Big Bang crest"
           width={1024}
           height={1024}
-          className="animate-float-soft mx-auto mb-8 size-32 drop-shadow-[0_0_45px_rgba(212,175,55,0.45)] sm:size-44"
+          className="animate-float-soft mx-auto mb-8 size-32 [filter:drop-shadow(0_16px_28px_rgba(0,0,0,0.7))_drop-shadow(0_0_36px_rgba(212,175,55,0.4))] sm:size-44"
         />
         <h1 className="gold-text text-4xl font-extrabold sm:text-6xl lg:text-7xl">
           {SITE.name}

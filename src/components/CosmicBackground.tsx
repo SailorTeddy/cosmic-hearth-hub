@@ -267,12 +267,12 @@ export function CosmicBackground() {
       const incline = 0.32;
       const planeRot = -0.2;
 
-      // Smooth separation cycle: wide → close (collision) → wide
-      const cycle = reduced ? 0.45 : 0.5 + 0.5 * Math.sin(t * 0.55);
+      // Smooth separation cycle: wide → close (collision) → wide (kept leisurely)
+      const cycle = reduced ? 0.45 : 0.5 + 0.5 * Math.sin(t * 0.22);
       // Closer = smaller orbit + faster spin (Kepler feel)
       const sep = 0.22 + 0.78 * cycle; // 1 = wide, ~0.22 = near-collision
       const a = minDim * (0.012 + 0.048 * sep);
-      const spinRate = reduced ? 0 : 0.55 + (1 - sep) * 2.4;
+      const spinRate = reduced ? 0 : 0.22 + (1 - sep) * 1.0;
       const ang = t * spinRate;
 
       const orbitPoint = (theta: number, radius: number) => {
@@ -291,8 +291,8 @@ export function CosmicBackground() {
       const purple = orbitPoint(ang + Math.PI, a);
 
       // Layla — soft pink star caught in Monica's (purple) orbit, like a moon
-      const laylaAng = ang * 2.6 + t * 1.8;
-      const laylaRad = a * (0.22 + 0.06 * Math.sin(t * 1.1));
+      const laylaAng = ang * 2.4 + t * 0.7;
+      const laylaRad = a * (0.22 + 0.06 * Math.sin(t * 0.45));
       const laylaLocal = {
         x: Math.cos(laylaAng) * laylaRad,
         y: Math.sin(laylaAng) * laylaRad * incline,
@@ -339,8 +339,8 @@ export function CosmicBackground() {
         ctx.fill();
 
         // Layla's pink trail around Monica's past position
-        const pastLaylaAng = past * 2.6 + t * 1.8 - i * 0.2;
-        const lr = a * (0.22 + 0.06 * Math.sin(t * 1.1));
+        const pastLaylaAng = past * 2.4 + t * 0.7 - i * 0.2;
+        const lr = a * (0.22 + 0.06 * Math.sin(t * 0.45));
         const lx = Math.cos(pastLaylaAng) * lr;
         const ly = Math.sin(pastLaylaAng) * lr * incline;
         const lpx = tp.x + lx * lca - ly * lsa;
