@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { FAMILY_BIRTHDAYS } from "@/data/family";
 import {
+  calendarDayKey,
   dailyReading,
   daysUntilBirthday,
   formatBirthday,
@@ -11,7 +12,26 @@ import { GlassCard } from "@/components/glass";
 import { cn } from "@/lib/utils";
 
 export function Astrology() {
-  const today = useMemo(() => new Date(), []);
+  const [dayKey, setDayKey] = useState(() => calendarDayKey());
+
+  useEffect(() => {
+    const sync = () => {
+      const next = calendarDayKey();
+      setDayKey((prev) => (prev === next ? prev : next));
+    };
+    sync();
+    const id = window.setInterval(sync, 60_000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") sync();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, []);
+
+  const today = useMemo(() => new Date(), [dayKey]);
 
   const members = useMemo(() => {
     return FAMILY_BIRTHDAYS.map((person) => {
