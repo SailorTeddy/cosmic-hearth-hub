@@ -22,6 +22,8 @@ import {
   type JournalInput,
 } from "@/lib/journal-api";
 import { fetchGuestbookNotes } from "@/lib/guestbook-api";
+import { fetchBlessingStars } from "@/lib/blessing-stars-api";
+import { FAMILY_SIDE_LABELS } from "@/lib/blessing-stars";
 const CATEGORIES: JournalCategory[] = ["Milestones", "Projects", "Life"];
 
 const emptyForm: JournalInput = {
@@ -475,8 +477,78 @@ function AdminEditor({ email, onSignOut }: { email: string; onSignOut: () => Pro
         </ul>
       </section>
 
+      <BlessingStarsInbox />
       <GuestbookInbox />
     </div>
+  );
+}
+
+function BlessingStarsInbox() {
+  const { data: stars = [], isLoading, isError, error } = useQuery({
+    queryKey: ["blessing-stars"],
+    queryFn: fetchBlessingStars,
+  });
+
+  return (
+    <section className="space-y-4">
+      <h2 className="text-lg font-bold text-champagne">Blessing stars</h2>
+      {isLoading && <p className="text-sm text-muted-foreground">Loading stars…</p>}
+      {isError && (
+        <p className="text-sm text-muted-foreground">
+          {error instanceof Error ? error.message : "Could not load blessing stars."} If this is
+          your first time, run <code className="text-champagne">supabase/blessing-stars.sql</code>{" "}
+          in the SQL Editor.
+        </p>
+      )}
+      {!isLoading && !isError && stars.length === 0 && (
+        <p className="text-sm text-muted-foreground">No blessing stars claimed yet.</p>
+      )}
+      <ul className="space-y-3">
+        {[...stars].reverse().map((star) => (
+          <li key={star.id}>
+            <GlassCard tilt={false} className="p-4 sm:p-5">
+              <p className="font-semibold text-champagne">✦ {star.name}</p>
+              <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                <span>{FAMILY_SIDE_LABELS[star.family_side]}</span>
+                <span>
+                  {star.members.length || star.star_count}{" "}
+                  {(star.members.length || star.star_count) === 1 ? "star" : "stars"}
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span
+                    className="inline-block size-2.5 rounded-full border border-white/30"
+                    style={{ backgroundColor: star.color }}
+                  />
+                  {star.color}
+                </span>
+              </p>
+              {star.message ? (
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{star.message}</p>
+              ) : null}
+              {star.members.length > 0 ? (
+                <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                  {star.members.map((m, i) => (
+                    <li key={`${star.id}-${i}`} className="flex items-start gap-2">
+                      <span
+                        className="mt-1 inline-block size-2 shrink-0 rounded-full border border-white/25"
+                        style={{ backgroundColor: m.color || star.color }}
+                      />
+                      <span>
+                        <span className="text-champagne">{m.name}</span>
+                        {m.personality ? ` — ${m.personality}` : ""}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              <p className="mt-3 text-xs text-muted-foreground">
+                {new Date(star.created_at).toLocaleString()}
+              </p>
+            </GlassCard>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

@@ -1,4 +1,13 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  clusterAnchor,
+  clusterSpread,
+  colorToRgb,
+  FAMILY_SIDE_LABELS,
+  hashString,
+  memberLocalOffset,
+  type BlessingStar,
+} from "@/lib/blessing-stars";
 
 type Star = {
   x: number;
@@ -23,13 +32,59 @@ type Gas = {
   a: number;
 };
 
+type Props = {
+  blessings?: BlessingStar[];
+};
+
 /**
  * Physically inspired black-hole field (2D approximation of
  * Schwarzschild lensing + thin accretion disk + Doppler beaming).
  * Not a GR ray-tracer — tuned to read like EHT / Interstellar imagery.
  */
-export function CosmicBackground() {
+export function CosmicBackground({ blessings = [] }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const blessingsRef = useRef(blessings);
+  blessingsRef.current = blessings;
+
+  const [viewport, setViewport] = useState({ w: 0, h: 0 });
+  const [activeKey, setActiveKey] = useState<string | null>(null);
+
+  const hotspots = useMemo(() => {
+    const w = viewport.w || (typeof window !== "undefined" ? window.innerWidth : 0);
+    const h = viewport.h || (typeof window !== "undefined" ? window.innerHeight : 0);
+    if (!w || !h) return [];
+
+    return blessings.flatMap((cluster) => {
+      const { nx, ny } = clusterAnchor(cluster.id, cluster.family_side);
+      const cx = nx * w;
+      const cy = ny * h;
+      const members = cluster.members?.length
+        ? cluster.members
+        : [{ name: cluster.name, personality: "", color: cluster.color }];
+      const count = members.length;
+      const spread = clusterSpread(w, h, count);
+
+      return members.map((member, index) => {
+        const off = memberLocalOffset(cluster.id, index, count);
+        return {
+          key: `${cluster.id}:${index}`,
+          clusterId: cluster.id,
+          clusterName: cluster.name,
+          clusterMessage: cluster.message,
+          family_side: cluster.family_side,
+          memberIndex: index,
+          members,
+          name: member.name,
+          personality: member.personality,
+          color: member.color || cluster.color,
+          x: cx + off.dx * spread,
+          y: cy + off.dy * spread,
+        };
+      });
+    });
+  }, [blessings, viewport.w, viewport.h]);
+
+  const active = hotspots.find((h) => h.key === activeKey) ?? null;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -69,6 +124,7 @@ export function CosmicBackground() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
+      setViewport({ w: width, h: height });
 
       const area = width * height;
       const starN = Math.min(mobile() ? 520 : 1600, Math.round(area / (mobile() ? 1400 : 750)));
@@ -253,6 +309,61 @@ export function CosmicBackground() {
       ctx.beginPath();
       ctx.arc(x - s * 0.18, y - s * 0.18, Math.max(0.9, s * 0.2), 0, Math.PI * 2);
       ctx.fill();
+
+      ctx.restore();
+    };
+
+    /** Personal clusters claimed by people who sent a blessing */
+    const drawBlessingClusters = () => {
+      const list = blessingsRef.current;
+      if (!list.length) return;
+
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+
+      for (const blessing of list) {
+        const { nx, ny } = clusterAnchor(blessing.id, blessing.family_side);
+        // No pointer parallax here — keeps HTML hotspots aligned with painted stars
+        const cx = nx * width;
+        const cy = ny * height;
+        const [cr, cg, cb] = colorToRgb(blessing.color);
+        const seed = hashString(blessing.id);
+        const pulse = reduced ? 1 : 0.88 + 0.12 * Math.sin(t * 1.4 + (seed % 100) * 0.07);
+        const members = blessing.members?.length
+          ? blessing.members
+          : [{ name: blessing.name, personality: "", color: blessing.color }];
+        const count = members.length;
+        const spread = clusterSpread(width, height, count);
+
+        const halo = ctx.createRadialGradient(cx, cy, 0, cx, cy, spread * 3.2);
+        halo.addColorStop(0, `rgba(${cr},${cg},${cb},${0.22 * pulse})`);
+        halo.addColorStop(0.45, `rgba(${cr},${cg},${cb},${0.08 * pulse})`);
+        halo.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(cx, cy, spread * 3.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        for (let i = 0; i < count; i++) {
+          const member = members[i];
+          const [r, g, b] = colorToRgb(member.color || blessing.color);
+          const off = memberLocalOffset(blessing.id, i, count);
+          const sx = cx + off.dx * spread;
+          const sy = cy + off.dy * spread;
+          const bit = hashString(`${blessing.id}:${i}`);
+          const sr = 0.75 + ((bit >>> 16) % 10) * 0.18;
+          const tw = reduced ? 1 : 0.7 + 0.3 * Math.sin(t * (2 + i * 0.35) + i);
+
+          const core = ctx.createRadialGradient(sx, sy, 0, sx, sy, sr * 4);
+          core.addColorStop(0, `rgba(255,255,255,${0.95 * tw})`);
+          core.addColorStop(0.35, `rgba(${r},${g},${b},${0.85 * tw})`);
+          core.addColorStop(1, `rgba(${r},${g},${b},0)`);
+          ctx.fillStyle = core;
+          ctx.beginPath();
+          ctx.arc(sx, sy, sr * 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
 
       ctx.restore();
     };
@@ -692,6 +803,7 @@ export function CosmicBackground() {
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = "source-over";
 
+      drawBlessingClusters();
       drawMarriageBinary();
 
       drawBlackHole(bhX, bhY, scale);
@@ -752,9 +864,87 @@ export function CosmicBackground() {
   }, []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10 bg-black" aria-hidden="true">
-      <canvas ref={canvasRef} className="h-full w-full" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_65%_55%,transparent_10%,rgba(0,0,0,0.35)_70%,rgba(0,0,0,0.75)_100%)]" />
-    </div>
+    <>
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-black" aria-hidden="true">
+        <canvas ref={canvasRef} className="h-full w-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_65%_55%,transparent_10%,rgba(0,0,0,0.35)_70%,rgba(0,0,0,0.75)_100%)]" />
+      </div>
+
+      {/* Tiny hotspots — only the stars capture clicks; page content sits above at z-10 */}
+      <div className="pointer-events-none fixed inset-0 z-[1]">
+        {hotspots.map((star) => (
+          <button
+            key={star.key}
+            type="button"
+            aria-label={`${star.name}${star.personality ? ` — ${star.personality}` : ""}`}
+            title={star.name}
+            onClick={() => setActiveKey((key) => (key === star.key ? null : star.key))}
+            className="pointer-events-auto absolute size-8 -translate-x-1/2 -translate-y-1/2 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+            style={{ left: star.x, top: star.y }}
+          />
+        ))}
+
+        {active && (
+          <div
+            role="dialog"
+            aria-label={`Star ${active.name} from ${active.clusterName}`}
+            className="pointer-events-auto absolute z-10 w-[min(20rem,calc(100vw-2rem))] -translate-x-1/2 rounded-xl border border-gold/40 bg-black/85 px-4 py-3 shadow-[0_12px_40px_rgba(0,0,0,0.55)] backdrop-blur-md"
+            style={{
+              left: Math.min(Math.max(active.x, 160), (viewport.w || window.innerWidth) - 160),
+              top: Math.min(active.y + 28, (viewport.h || window.innerHeight) - 160),
+            }}
+          >
+            <p className="text-xs font-semibold tracking-widest text-gold uppercase">Named star</p>
+            <p className="mt-1 flex items-center gap-2 text-sm font-semibold text-champagne">
+              <span
+                className="inline-block size-2.5 rounded-full border border-white/30"
+                style={{ backgroundColor: active.color }}
+              />
+              {active.name}
+            </p>
+            {active.personality ? (
+              <p className="mt-1 text-xs italic leading-relaxed text-champagne/80">
+                “{active.personality}”
+              </p>
+            ) : null}
+            <p className="mt-2 text-xs text-muted-foreground">
+              {active.clusterName} · {FAMILY_SIDE_LABELS[active.family_side]}
+            </p>
+            {active.clusterMessage ? (
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                {active.clusterMessage}
+              </p>
+            ) : null}
+            {active.members.length > 1 ? (
+              <ul className="mt-3 max-h-28 space-y-1 overflow-y-auto border-t border-glass-border pt-2">
+                {active.members.map((m, i) => (
+                  <li key={`${active.clusterId}-m-${i}`}>
+                    <button
+                      type="button"
+                      onClick={() => setActiveKey(`${active.clusterId}:${i}`)}
+                      className={
+                        i === active.memberIndex
+                          ? "text-left text-xs text-gold"
+                          : "text-left text-xs text-muted-foreground hover:text-champagne"
+                      }
+                    >
+                      ✦ {m.name}
+                      {m.personality ? ` — ${m.personality}` : ""}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            <button
+              type="button"
+              className="mt-2 text-xs text-gold/80 underline-offset-2 hover:underline"
+              onClick={() => setActiveKey(null)}
+            >
+              Close
+            </button>
+          </div>
+        )}
+      </div>
+    </>
   );
 }

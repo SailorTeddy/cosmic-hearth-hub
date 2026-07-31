@@ -1,9 +1,11 @@
 import { useState, useMemo } from "react";
-import { Copy, Check, ExternalLink, Heart, AlertCircle, Gift } from "lucide-react";
+import { Copy, Check, ExternalLink, Heart, AlertCircle, Gift, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { PAY_LINKS, PAYPAL_POOLS, QUICK_GIFTS, HOUSEWARMING_REGISTRY } from "@/config/site";
 import { GlassCard, MagneticButton } from "@/components/glass";
+import { ClaimStarDialog } from "@/components/ClaimStarDialog";
+import type { BlessingStar } from "@/lib/blessing-stars";
 
 const MIN_GIFT = 1;
 const MAX_GIFT = 2500;
@@ -18,10 +20,15 @@ const amountSchema = z
   .refine((n) => n >= MIN_GIFT, { message: `Minimum gift is $${MIN_GIFT}.` })
   .refine((n) => n <= MAX_GIFT, { message: `Maximum gift is $${MAX_GIFT.toLocaleString()}.` });
 
-export function Support() {
+type Props = {
+  onStarClaimed?: (star: BlessingStar) => void;
+};
+
+export function Support({ onStarClaimed }: Props) {
   const [copied, setCopied] = useState<string | null>(null);
   const [custom, setCustom] = useState("");
   const [touched, setTouched] = useState(false);
+  const [claimOpen, setClaimOpen] = useState(false);
 
   const parsed = useMemo(() => {
     const result = amountSchema.safeParse(custom);
@@ -217,7 +224,33 @@ export function Support() {
             ),
           )}
         </div>
+
+        <div className="my-8 h-px bg-[linear-gradient(90deg,transparent,var(--glass-border),transparent)]" />
+
+        <div className="mb-4 flex items-center gap-2 text-sm font-semibold tracking-widest text-gold uppercase">
+          <Sparkles className="size-4" />
+          Claim your star
+        </div>
+        <p className="mb-5 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          After you send a blessing, open the star studio to design your cluster — name, color, and
+          a short note — then place it in our sky. Tap any blessing star later to see who lit it.
+        </p>
+
+        <MagneticButton
+          type="button"
+          onClick={() => setClaimOpen(true)}
+          className="bg-gold text-primary-foreground shadow-[var(--shadow-glow)] hover:bg-gold-soft"
+        >
+          <Sparkles className="size-4 shrink-0" />
+          Design &amp; place my star
+        </MagneticButton>
       </GlassCard>
+
+      <ClaimStarDialog
+        open={claimOpen}
+        onOpenChange={setClaimOpen}
+        onStarClaimed={onStarClaimed}
+      />
     </section>
   );
 }

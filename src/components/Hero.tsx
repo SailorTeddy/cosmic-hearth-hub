@@ -69,14 +69,14 @@ export function Hero() {
         </p>
 
         <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-          <a href="#journal">
+          <a href="#support">
             <MagneticButton className="bg-gold text-primary-foreground shadow-[var(--shadow-glow)] hover:bg-gold-soft">
-              Read the Family Journal
+              Send a Blessing
             </MagneticButton>
           </a>
-          <a href="#guestbook">
+          <a href="#journal">
             <MagneticButton className="border border-glass-border bg-secondary text-champagne hover:bg-muted">
-              Leave us a note
+              Read the Family Journal
             </MagneticButton>
           </a>
         </div>

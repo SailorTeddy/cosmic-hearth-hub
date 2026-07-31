@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { CosmicBackground } from "@/components/CosmicBackground";
 import { Hero } from "@/components/Hero";
@@ -6,6 +7,8 @@ import { Astrology } from "@/components/Astrology";
 import { Support } from "@/components/Support";
 import { Guestbook } from "@/components/Guestbook";
 import { Footer } from "@/components/Footer";
+import { fetchBlessingStars } from "@/lib/blessing-stars-api";
+import type { BlessingStar } from "@/lib/blessing-stars";
 
 const TITLE = "The Nichols Estate — Family Hub";
 const DESCRIPTION =
@@ -41,17 +44,39 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const [blessings, setBlessings] = useState<BlessingStar[]>([]);
+
+  useEffect(() => {
+    let alive = true;
+    fetchBlessingStars()
+      .then((stars) => {
+        if (alive) setBlessings(stars);
+      })
+      .catch(() => {
+        /* sky stays empty if offline */
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const onStarClaimed = useCallback((star: BlessingStar) => {
+    setBlessings((prev) => (prev.some((s) => s.id === star.id) ? prev : [...prev, star]));
+  }, []);
+
   return (
     <>
-      <CosmicBackground />
-      <main className="relative">
+      <CosmicBackground blessings={blessings} />
+      <main className="relative z-10">
         <Hero />
+        <Support onStarClaimed={onStarClaimed} />
         <Journal />
         <Astrology />
-        <Support />
         <Guestbook />
       </main>
-      <Footer />
+      <div className="relative z-10">
+        <Footer />
+      </div>
     </>
   );
 }
