@@ -231,9 +231,12 @@ export function ClaimStarDialog({ open, onOpenChange, onStarClaimed }: Props) {
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Could not place your star.";
       const needsKeys = /supabase is not configured/i.test(msg);
+      const isLocal = typeof window !== "undefined" && /localhost|127\.0\.0\.1/.test(window.location.hostname);
       toast.error(needsKeys ? "Star sky isn’t connected yet." : msg, {
         description: needsKeys
-          ? "Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env, then restart npm run dev."
+          ? isLocal
+            ? "Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env, then restart npm run dev."
+            : "Open the project in Lovable → edit the `.env` file with your VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (same as local) → Publish again. Anon keys are public; RLS protects the data."
           : msg.includes("schema cache") || msg.includes("family_side") || msg.includes("members")
             ? "Run supabase/blessing-stars-fix.sql in the Supabase SQL Editor."
             : undefined,

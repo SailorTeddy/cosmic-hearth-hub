@@ -33,9 +33,12 @@ const blessingInput = z.object({
 
 function getServerSupabase() {
   const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  // Lovable Cloud injects SUPABASE_ANON_KEY; local/dev often uses VITE_ / PUBLISHABLE_
   const key =
     process.env.SUPABASE_PUBLISHABLE_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
     process.env.VITE_SUPABASE_ANON_KEY ||
+    process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
     process.env.SUPABASE_SECRET_KEY;
 
   if (!url || !key) {

@@ -15,9 +15,11 @@ dist-ssr
 .tanstack/**
 .nitro
 *.local
-.env
-.env.*
-!.env.example
+# Lovable publishes need committed .env for VITE_* build-time values.
+# Keep private keys (Resend, service role) in .env.local or Cloud → Secrets.
+.env.local
+.env.*.local
+.env.example.local
 
 # Wrangler / Cloudflare
 .wrangler/
