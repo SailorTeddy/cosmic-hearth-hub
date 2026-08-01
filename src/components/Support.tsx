@@ -233,17 +233,28 @@ export function Support({ onStarClaimed }: Props) {
         </div>
         <p className="mb-5 max-w-2xl text-sm leading-relaxed text-muted-foreground">
           After you send a blessing, open the star studio to design your cluster — name, color, and
-          a short note — then place it in our sky. Tap any blessing star later to see who lit it.
+          a short note — then place it in our sky. Visit the Family Sky anytime to explore every
+          cluster without the page in the way.
         </p>
 
-        <MagneticButton
-          type="button"
-          onClick={() => setClaimOpen(true)}
-          className="bg-gold text-primary-foreground shadow-[var(--shadow-glow)] hover:bg-gold-soft"
-        >
-          <Sparkles className="size-4 shrink-0" />
-          Design &amp; place my star
-        </MagneticButton>
+        <div className="flex flex-wrap gap-3">
+          <MagneticButton
+            type="button"
+            onClick={() => setClaimOpen(true)}
+            className="bg-gold text-primary-foreground shadow-[var(--shadow-glow)] hover:bg-gold-soft"
+          >
+            <Sparkles className="size-4 shrink-0" />
+            Design &amp; place my star
+          </MagneticButton>
+          <a href="/sky">
+            <MagneticButton
+              type="button"
+              className="border border-glass-border bg-secondary text-champagne hover:bg-muted"
+            >
+              Explore the Family Sky
+            </MagneticButton>
+          </a>
+        </div>
       </GlassCard>
 
       <ClaimStarDialog

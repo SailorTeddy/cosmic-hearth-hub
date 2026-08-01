@@ -17,6 +17,8 @@ export function GlassCard({
 
   const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!tilt) return;
+    // Skip continuous tilt work on touch / coarse pointers
+    if (typeof window !== "undefined" && !window.matchMedia("(pointer: fine)").matches) return;
     const el = ref.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
@@ -37,7 +39,7 @@ export function GlassCard({
       onPointerLeave={reset}
       style={style}
       className={cn(
-        "glass-panel transition-[transform,box-shadow] duration-300 ease-out will-change-transform hover:shadow-[var(--shadow-glow)]",
+        "glass-panel transition-[transform,box-shadow] duration-300 ease-out hover:shadow-[var(--shadow-glow)]",
         className,
       )}
     >

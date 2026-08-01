@@ -28,7 +28,6 @@ import {
   type FamilySide,
 } from "@/lib/blessing-stars";
 import { submitBlessingStar } from "@/lib/blessing-stars-api";
-import { isSupabaseConfigured } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -192,12 +191,6 @@ export function ClaimStarDialog({ open, onOpenChange, onStarClaimed }: Props) {
 
   const claimStar = async (e: FormEvent) => {
     e.preventDefault();
-    if (!isSupabaseConfigured) {
-      toast.error("Star sky isn’t connected yet.", {
-        description: "Add Supabase keys, then run supabase/blessing-stars.sql.",
-      });
-      return;
-    }
     const name = clusterName.trim();
     if (!name) {
       toast.error("Add a name for your cluster.");
@@ -236,7 +229,15 @@ export function ClaimStarDialog({ open, onOpenChange, onStarClaimed }: Props) {
       onOpenChange(false);
       reset();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not place your star.");
+      const msg = err instanceof Error ? err.message : "Could not place your star.";
+      const needsKeys = /supabase is not configured/i.test(msg);
+      toast.error(needsKeys ? "Star sky isn’t connected yet." : msg, {
+        description: needsKeys
+          ? "Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env, then restart npm run dev."
+          : msg.includes("schema cache") || msg.includes("family_side") || msg.includes("members")
+            ? "Run supabase/blessing-stars-fix.sql in the Supabase SQL Editor."
+            : undefined,
+      });
     } finally {
       setClaiming(false);
     }

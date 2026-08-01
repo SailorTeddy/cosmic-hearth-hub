@@ -74,9 +74,9 @@ export function Hero() {
               Send a Blessing
             </MagneticButton>
           </a>
-          <a href="#journal">
+          <a href="/sky">
             <MagneticButton className="border border-glass-border bg-secondary text-champagne hover:bg-muted">
-              Read the Family Journal
+              Explore the Family Sky
             </MagneticButton>
           </a>
         </div>

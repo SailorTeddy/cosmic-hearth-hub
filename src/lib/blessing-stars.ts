@@ -161,40 +161,118 @@ export function hashString(input: string): number {
   return h >>> 0;
 }
 
-export function clusterAnchor(id: string, side: FamilySide = "nichols"): { nx: number; ny: number } {
+export type SkyLayout = "banner" | "explore";
+
+/** Black-hole anchor in normalized viewport space (matches CosmicBackground). */
+export const SKY_HOLE = { nx: 0.68, ny: 0.55 } as const;
+
+/**
+ * Place clusters by family side.
+ * - banner: upper sky (behind home-page content), clear of the hole
+ * - explore: far ring around the hole so zooming feels like a journey
+ */
+export function clusterAnchor(
+  id: string,
+  side: FamilySide = "nichols",
+  layout: SkyLayout = "banner",
+): { nx: number; ny: number } {
   const h = hashString(id);
+
+  if (layout === "explore") {
+    // Family-side wedges around the hole (radians from +x)
+    const sector =
+      side === "rentz"
+        ? { a0: -0.95, span: 1.45 } // east / northeast
+        : side === "chosen"
+          ? { a0: 0.45, span: 2.0 } // south
+          : { a0: 2.05, span: 1.55 }; // west / northwest
+    const ang = sector.a0 + ((h % 1000) / 1000) * sector.span;
+    // Far orbit — past the first viewport edge so pan+zoom reads as travel
+    const dist = 1.05 + (((h >>> 10) % 1000) / 1000) * 0.9; // 1.05–1.95
+    return {
+      nx: SKY_HOLE.nx + Math.cos(ang) * dist,
+      ny: SKY_HOLE.ny + Math.sin(ang) * dist * 0.72,
+    };
+  }
+
+  // Homepage banner: keep in the upper sky, away from the hole at ~0.68×0.55
   const band =
     side === "rentz"
-      ? { min: 0.62, span: 0.31 }
+      ? { min: 0.72, span: 0.24 }
       : side === "chosen"
-        ? { min: 0.34, span: 0.32 }
-        : { min: 0.07, span: 0.31 };
+        ? { min: 0.38, span: 0.28 }
+        : { min: 0.04, span: 0.3 };
   const nx = band.min + ((h % 1000) / 1000) * band.span;
-  const ny = 0.05 + (((h >>> 10) % 1000) / 1000) * 0.42;
+  const ny = 0.04 + (((h >>> 10) % 1000) / 1000) * 0.28;
   return { nx, ny };
 }
 
-/** Stable offset of a member star within a cluster (spread units). */
+/** Per-cluster orbital plane — tilted like the marriage binary. */
+export function clusterOrbitMeta(clusterId: string): {
+  incline: number;
+  planeRot: number;
+  phase: number;
+} {
+  const seed = hashString(clusterId);
+  return {
+    incline: 0.3 + ((seed % 80) / 80) * 0.28,
+    planeRot: ((seed >>> 7) % 1000) / 1000 * Math.PI * 2,
+    phase: ((seed >>> 3) % 1000) / 1000 * Math.PI * 2,
+  };
+}
+
+/**
+ * Member position in an inclined coplanar orbit (spread units).
+ * Every cluster shares the same spin clock so the sky turns in harmony.
+ */
 export function memberLocalOffset(
   clusterId: string,
   index: number,
   count: number,
-): { dx: number; dy: number; ang: number; rad: number } {
+  spin = 0,
+): { dx: number; dy: number; ang: number; rad: number; incline: number; planeRot: number } {
+  const { incline, planeRot, phase } = clusterOrbitMeta(clusterId);
   const bit = hashString(`${clusterId}:${index}`);
-  const ang = ((bit % 1000) / 1000) * Math.PI * 2;
-  const rad = 0.2 + ((bit >>> 8) % 1000) / 1000 * 0.95;
-  // Single-star clusters sit on the jewel
-  if (count <= 1) return { dx: 0, dy: 0, ang, rad: 0 };
+
+  if (count <= 1) {
+    return { dx: 0, dy: 0, ang: spin + phase, rad: 0, incline, planeRot };
+  }
+
+  // Soft wide↔close breathing, shared tempo
+  const breath = 0.82 + 0.18 * Math.sin(spin * 0.65 + phase);
+
+  // Binaries sit opposite — dance partners. Larger families share the ring.
+  const ang =
+    count === 2
+      ? spin + phase + index * Math.PI
+      : spin + phase + (index / count) * Math.PI * 2 + ((bit % 40) / 40 - 0.5) * 0.1;
+
+  const radBase =
+    count === 2 ? 0.9 : 0.42 + ((bit >>> 8) % 1000) / 1000 * 0.58;
+  const rad = radBase * breath;
+
+  const x = Math.cos(ang) * rad;
+  const y = Math.sin(ang) * rad * incline;
+  const ca = Math.cos(planeRot);
+  const sa = Math.sin(planeRot);
   return {
-    dx: Math.cos(ang) * rad,
-    dy: Math.sin(ang) * rad * 0.72,
+    dx: x * ca - y * sa,
+    dy: x * sa + y * ca,
     ang,
     rad,
+    incline,
+    planeRot,
   };
 }
 
+/** Shared sky clock (radians). All family systems orbit on this beat. */
+export function clusterSpinRadians(nowMs = Date.now()): number {
+  // ~7°/s — gentle, readable, same tempo as the marriage binary’s leisure feel
+  return (nowMs / 1000) * 0.12;
+}
+
 export function clusterSpread(width: number, height: number, count: number): number {
-  return Math.min(width, height) * (0.012 + Math.min(count, 16) * 0.0011);
+  return Math.min(width, height) * (0.014 + Math.min(count, 16) * 0.00125);
 }
 
 export const COLOR_PRESETS = [
