@@ -73,7 +73,8 @@ export function Astrology() {
       <header className="mb-8 text-center">
         <h2 className="gold-text text-3xl font-bold sm:text-4xl">Family Stars</h2>
         <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
-          Birthdays, sun signs, and a fresh cosmic note each day. Readings refresh at midnight.
+          A horoscope, a gateway focus, one line to say out loud, and someone to remember. Fresh
+          at midnight.
         </p>
       </header>
 
@@ -143,8 +144,50 @@ export function Astrology() {
               Today&apos;s reading
             </div>
             <p className="text-base leading-relaxed text-champagne/95 sm:text-lg">
-              {selected.reading}
+              {selected.reading.prose}
             </p>
+
+            <div className="mt-6 rounded-2xl border border-glass-border bg-black/25 px-4 py-4 sm:px-5">
+              <p className="text-[0.65rem] font-semibold tracking-[0.22em] text-gold uppercase">
+                Gateway · {selected.reading.gateway.name}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-champagne/90 sm:text-base">
+                {selected.reading.gateway.line}
+              </p>
+            </div>
+
+            <blockquote className="mt-4 border-l-2 border-gold/50 pl-4">
+              <p className="text-[0.65rem] font-semibold tracking-[0.22em] text-muted-foreground uppercase">
+                Say this once
+              </p>
+              <p className="mt-2 text-base leading-relaxed text-champagne italic sm:text-lg">
+                “{selected.reading.affirmation}”
+              </p>
+            </blockquote>
+
+            <details className="group mt-5 rounded-2xl border border-glass-border bg-black/20 px-4 py-3 sm:px-5">
+              <summary className="cursor-pointer list-none text-xs font-semibold tracking-[0.2em] text-gold uppercase select-none">
+                <span className="mr-2 inline-block transition-transform group-open:rotate-90">›</span>
+                Take the 60-second rite
+              </summary>
+              <ol className="mt-4 space-y-3">
+                {selected.reading.rite.map((r, i) => (
+                  <li key={r.step} className="flex gap-3">
+                    <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border border-gold/40 text-[0.65rem] font-semibold text-gold">
+                      {i + 1}
+                    </span>
+                    <p className="text-sm leading-relaxed text-champagne/90">
+                      <span className="font-semibold text-champagne">{r.step}.</span> {r.text}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+              <p className="mt-4 text-[0.7rem] leading-relaxed text-muted-foreground">
+                Focus names borrow from the Monroe Gateway Process as poetry, not therapy or
+                instruction.
+              </p>
+            </details>
+
             <p className="mt-5 text-xs text-muted-foreground">
               {selected.name}&apos;s {selected.sign.name} season · {selected.sign.dates}
             </p>
