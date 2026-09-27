@@ -10,9 +10,9 @@ import { Footer } from "@/components/Footer";
 import { fetchBlessingStars } from "@/lib/blessing-stars-api";
 import type { BlessingStar } from "@/lib/blessing-stars";
 
-const TITLE = "The Nichols Estate — Family Hub";
+const TITLE = "The Nichols Family";
 const DESCRIPTION =
-  "Family updates, milestones and space to connect. The Nichols Estate is our little corner of the universe — journal entries, photos, a guestbook and a way to send a blessing.";
+  "Family updates, milestones and space to connect. The Nichols Family is our little corner of the universe — journal entries, photos, a guestbook and a way to send a blessing.";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebSite",
-          name: "The Nichols Estate",
+          name: "The Nichols Family",
           description: DESCRIPTION,
         }),
       },

@@ -39,7 +39,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
   head: () => ({
     meta: [
-      { title: "Family Journal Admin — The Nichols Estate" },
+      { title: "Family Journal Admin — The Nichols Family" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

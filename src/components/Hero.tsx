@@ -52,7 +52,7 @@ export function Hero() {
       >
         <img
           src={crest}
-          alt="The Nichols Estate black hole Big Bang crest"
+          alt="The Nichols Family black hole Big Bang crest"
           width={1024}
           height={1024}
           className="animate-float-soft mx-auto mb-8 size-32 [filter:drop-shadow(0_16px_28px_rgba(0,0,0,0.7))_drop-shadow(0_0_36px_rgba(212,175,55,0.4))] sm:size-44"

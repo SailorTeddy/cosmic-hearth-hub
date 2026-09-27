@@ -15,11 +15,11 @@ export const Route = createFileRoute("/sky")({
   component: SkyPage,
   head: () => ({
     meta: [
-      { title: "Family Sky — The Nichols Estate" },
+      { title: "Family Sky — The Nichols Family" },
       {
         name: "description",
         content:
-          "Explore the Nichols Estate universe — tap blessing star clusters from the Rentz side, Nichols side, and chosen family.",
+          "Explore the Nichols Family universe — tap blessing star clusters from the Rentz side, Nichols side, and chosen family.",
       },
     ],
   }),
@@ -82,7 +82,7 @@ function SkyPage() {
           className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-glass-border bg-black/55 px-3 py-2 text-xs font-semibold text-champagne backdrop-blur-md transition-colors hover:border-gold/50 hover:text-gold"
         >
           <ArrowLeft className="size-3.5" />
-          Back to the Estate
+          Back to the Family
         </Link>
 
         <div className="pointer-events-auto max-w-[14rem] text-right sm:max-w-none">

@@ -14,7 +14,7 @@ export async function emailGuestbookNote(input: {
     return { sent: false, reason: "RESEND_API_KEY is not set" };
   }
 
-  const from = process.env.GUESTBOOK_FROM_EMAIL || "The Nichols Estate <onboarding@resend.dev>";
+  const from = process.env.GUESTBOOK_FROM_EMAIL || "The Nichols Family <onboarding@resend.dev>";
   const resend = new Resend(apiKey);
 
   const subject = `Guestbook note from ${input.name}`;

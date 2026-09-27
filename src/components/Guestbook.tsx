@@ -61,7 +61,7 @@ export function Guestbook() {
         <header className="mb-8 text-center">
           <h2 className="gold-text text-3xl font-bold sm:text-4xl">The Digital Guestbook</h2>
           <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-            Leave a note for the family — we read every one in the Estate inbox.
+            Leave a note for the family — we read every one in the family inbox.
           </p>
         </header>
 

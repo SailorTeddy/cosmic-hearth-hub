@@ -52,7 +52,7 @@ export function Support({ onStarClaimed }: Props) {
     <section id="support" className="mx-auto max-w-5xl scroll-mt-16 px-4 py-20 sm:px-6">
       <header className="mb-8 text-center">
         <h2 className="gold-text text-3xl font-bold sm:text-4xl">
-          Support the Estate · Send a Blessing
+          Support the Family · Send a Blessing
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
           No pressure and no expectations — truly. But if you'd like to chip into our family

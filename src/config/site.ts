@@ -1,9 +1,9 @@
 /**
- * Edit everything about the Estate here — handles, links, guestbook target.
+ * Edit everything about the site here — handles, links, guestbook target.
  */
 
 export const SITE = {
-  name: "The Nichols Estate",
+  name: "The Nichols Family",
   subtitle: "Family Updates, Milestones & Space to Connect.",
   badge: "Welcome to the Nichols Family Hub",
 };

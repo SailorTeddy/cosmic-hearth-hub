@@ -78,12 +78,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "The Nichols Estate — Family Hub" },
+      { title: "The Nichols Family" },
       {
         name: "description",
-        content: "Family updates, milestones and space to connect at the Nichols Estate.",
+        content: "Family updates, milestones and space to connect at the Nichols Family hub.",
       },
-      { property: "og:site_name", content: "The Nichols Estate" },
+      { property: "og:site_name", content: "The Nichols Family" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "theme-color", content: "#000000" },
