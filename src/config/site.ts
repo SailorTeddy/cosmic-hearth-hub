@@ -84,3 +84,6 @@ export const GUESTBOOK_NOTIFY_EMAILS = [
   "Nichols.Emmanuel@outlook.com",
   "Monica.Rentz97@gmail.com",
 ] as const;
+
+/** Daily Family Stars email recipients (override with HOROSCOPE_EMAIL_TO). */
+export const HOROSCOPE_NOTIFY_EMAILS = ["emmanuellovesall@gmail.com"] as const;

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as SkyRouteImport } from './routes/sky'
+import { Route as ApiCronHoroscopeEmailRouteImport } from './routes/api/cron/horoscope-email'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const SkyRoute = SkyRouteImport.update({
   path: '/sky',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCronHoroscopeEmailRoute = ApiCronHoroscopeEmailRouteImport.update({
+  id: '/api/cron/horoscope-email',
+  path: '/api/cron/horoscope-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/sky': typeof SkyRoute
+  '/api/cron/horoscope-email': typeof ApiCronHoroscopeEmailRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/sky': typeof SkyRoute
+  '/api/cron/horoscope-email': typeof ApiCronHoroscopeEmailRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/sky': typeof SkyRoute
+  '/api/cron/horoscope-email': typeof ApiCronHoroscopeEmailRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/sky'
+  fullPaths: '/' | '/admin' | '/sky' | '/api/cron/horoscope-email'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/sky'
-  id: '__root__' | '/' | '/admin' | '/sky'
+  to: '/' | '/admin' | '/sky' | '/api/cron/horoscope-email'
+  id: '__root__' | '/' | '/admin' | '/sky' | '/api/cron/horoscope-email'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   SkyRoute: typeof SkyRoute
+  ApiCronHoroscopeEmailRoute: typeof ApiCronHoroscopeEmailRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SkyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/cron/horoscope-email': {
+      id: '/api/cron/horoscope-email'
+      path: '/api/cron/horoscope-email'
+      fullPath: '/api/cron/horoscope-email'
+      preLoaderRoute: typeof ApiCronHoroscopeEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   SkyRoute: SkyRoute,
+  ApiCronHoroscopeEmailRoute: ApiCronHoroscopeEmailRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
