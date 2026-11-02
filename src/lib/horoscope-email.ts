@@ -213,9 +213,7 @@ export async function sendDailyHoroscopeEmail(options?: {
   }
 
   const from =
-    process.env.HOROSCOPE_FROM_EMAIL ||
-    process.env.GUESTBOOK_FROM_EMAIL ||
-    "The Nichols Family <onboarding@resend.dev>";
+    process.env.HOROSCOPE_FROM_EMAIL || "The Nichols Family <onboarding@resend.dev>";
 
   const resend = new Resend(apiKey);
   const results: PersonEmailResult[] = [];

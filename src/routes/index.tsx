@@ -4,14 +4,13 @@ import { CosmicBackground } from "@/components/CosmicBackground";
 import { Hero } from "@/components/Hero";
 import { Astrology } from "@/components/Astrology";
 import { Support } from "@/components/Support";
-import { Guestbook } from "@/components/Guestbook";
 import { Footer } from "@/components/Footer";
 import { fetchBlessingStars } from "@/lib/blessing-stars-api";
 import type { BlessingStar } from "@/lib/blessing-stars";
 
 const TITLE = "The Nichols Family";
 const DESCRIPTION =
-  "The Nichols Family is our little corner of the universe — a guestbook, daily sky readings, and a way to send a blessing.";
+  "The Nichols Family is our little corner of the universe — daily sky readings and a way to send a blessing.";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -70,7 +69,6 @@ function Index() {
         <Hero />
         <Support onStarClaimed={onStarClaimed} />
         <Astrology />
-        <Guestbook />
       </main>
       <div className="relative z-10">
         <Footer />

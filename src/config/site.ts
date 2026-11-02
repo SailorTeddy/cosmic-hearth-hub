@@ -1,5 +1,5 @@
 /**
- * Edit everything about the site here — handles, links, guestbook target.
+ * Edit everything about the site here — handles, links, registries.
  */
 
 export const SITE = {
@@ -71,16 +71,3 @@ export const QUICK_GIFTS = [
   { amount: 50, title: "Family Dinner Fund", blurb: "Pull up a chair at the table." },
   { amount: 0, title: "Custom Amount", blurb: "Whatever feels right — truly." },
 ];
-
-export const REACTIONS = [
-  { emoji: "🚀", label: "To the moon" },
-  { emoji: "💛", label: "Love this" },
-  { emoji: "🥂", label: "Cheers" },
-  { emoji: "🏡", label: "Home vibes" },
-];
-
-/** Where guestbook notes are emailed (server-side via Resend). */
-export const GUESTBOOK_NOTIFY_EMAILS = [
-  "Nichols.Emmanuel@outlook.com",
-  "Monica.Rentz97@gmail.com",
-] as const;
