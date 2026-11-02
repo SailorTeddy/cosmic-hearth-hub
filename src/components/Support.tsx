@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Copy, Check, ExternalLink, Heart, AlertCircle, Gift, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { PAY_LINKS, PAYPAL_POOLS, QUICK_GIFTS, HOUSEWARMING_REGISTRY } from "@/config/site";
+import { PAY_LINKS, PAYPAL_POOLS, QUICK_GIFTS, BABY_REGISTRIES } from "@/config/site";
 import { GlassCard, MagneticButton } from "@/components/glass";
 import { ClaimStarDialog } from "@/components/ClaimStarDialog";
 import type { BlessingStar } from "@/lib/blessing-stars";
@@ -62,28 +62,33 @@ export function Support({ onStarClaimed }: Props) {
       </header>
 
       <GlassCard className="p-6 sm:p-9" tilt={false}>
-        <a
-          href={HOUSEWARMING_REGISTRY.href}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="group mb-8 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 rounded-lg border border-gold/35 bg-secondary/60 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-gold/60 hover:shadow-[var(--shadow-glow)]"
-        >
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-glass-border bg-background/40 text-gold">
-            <Gift className="size-5" />
-          </span>
-          <span className="min-w-0 text-left">
-            <span className="block text-xs font-semibold tracking-widest text-gold uppercase">
-              Housewarming
-            </span>
-            <span className="mt-1 block text-base font-semibold text-champagne">
-              {HOUSEWARMING_REGISTRY.label}
-            </span>
-            <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
-              {HOUSEWARMING_REGISTRY.blurb}
-            </span>
-          </span>
-          <ExternalLink className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-gold" />
-        </a>
+        <div className="mb-8 space-y-3">
+          {BABY_REGISTRIES.map((registry) => (
+            <a
+              key={registry.store}
+              href={registry.href}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="group grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 rounded-lg border border-gold/35 bg-secondary/60 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-gold/60 hover:shadow-[var(--shadow-glow)]"
+            >
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-glass-border bg-background/40 text-gold">
+                <Gift className="size-5" />
+              </span>
+              <span className="min-w-0 text-left">
+                <span className="block text-xs font-semibold tracking-widest text-gold uppercase">
+                  {registry.store}
+                </span>
+                <span className="mt-1 block text-base font-semibold text-champagne">
+                  {registry.label}
+                </span>
+                <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
+                  {registry.blurb}
+                </span>
+              </span>
+              <ExternalLink className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-gold" />
+            </a>
+          ))}
+        </div>
 
         <h3 className="text-sm font-semibold tracking-widest text-gold uppercase">
           Quick gifting

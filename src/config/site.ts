@@ -24,12 +24,21 @@ export const PAYPAL_POOLS = {
   general: "https://www.paypal.com/pool/9rkIwuTLkR?sr=wccr",
 };
 
-/** Amazon baby registry for guests */
-export const HOUSEWARMING_REGISTRY = {
-  label: "Baby Registry",
-  blurb: "Welcoming our little one in January 2027? Monica's Amazon baby registry has ideas big and small.",
-  href: "https://www.amazon.com/baby-reg/monica-rentz-january-2027-cincinnati/2L483C92ZN5N1?ref_=cm_sw_r_cp_ud_dp_4V92RT81Y6RX9AW95MG5",
-};
+/** Baby registries for guests */
+export const BABY_REGISTRIES = [
+  {
+    store: "Amazon",
+    label: "Amazon Baby Registry",
+    blurb: "Welcoming our little one in January 2027? Ideas big and small on Amazon.",
+    href: "https://www.amazon.com/baby-reg/monica-rentz-january-2027-cincinnati/2L483C92ZN5N1?ref_=cm_sw_r_cp_ud_dp_4V92RT81Y6RX9AW95MG5",
+  },
+  {
+    store: "Target",
+    label: "Target Baby Registry",
+    blurb: "Prefer Target? Monica's baby registry is there too.",
+    href: "https://www.target.com/gift-registry/gift-giver?registryId=2256b340-b9e6-11f1-bf3c-0521c0ae78d5&type=BABY&clkid=476aea96Nbe0c11f19d327da410bcf4bb&cpng=PTID1&TCID=AFL-476aea96Nbe0c11f19d327da410bcf4bb-2310483&afsrc=1&lnm=81938&afid=Evite&ref=tgt_adv_xasd0002",
+  },
+] as const;
 
 export const PAY_LINKS: PayLink[] = [
   {
