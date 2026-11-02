@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import crest from "@/assets/crest.png";
+import crest from "@/assets/crest.webp";
 import { SITE } from "@/config/site";
 import { GlassCard, MagneticButton } from "@/components/glass";
 
@@ -53,8 +53,10 @@ export function Hero() {
         <img
           src={crest}
           alt="The Nichols Family black hole Big Bang crest"
-          width={1024}
-          height={1024}
+          width={384}
+          height={384}
+          fetchPriority="high"
+          decoding="async"
           className="animate-float-soft mx-auto mb-8 size-32 [filter:drop-shadow(0_16px_28px_rgba(0,0,0,0.7))_drop-shadow(0_0_36px_rgba(212,175,55,0.4))] sm:size-44"
         />
         <h1 className="gold-text text-4xl font-extrabold sm:text-6xl lg:text-7xl">

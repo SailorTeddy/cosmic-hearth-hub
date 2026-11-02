@@ -1,4 +1,4 @@
-import crest from "@/assets/crest.png";
+import crestSm from "@/assets/crest-sm.webp";
 
 export function Footer() {
   return (
@@ -6,11 +6,12 @@ export function Footer() {
       <div className="h-px bg-[linear-gradient(90deg,transparent,var(--glass-border),transparent)]" />
       <div className="mt-8 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4">
         <img
-          src={crest}
+          src={crestSm}
           alt=""
-          width={1024}
-          height={1024}
+          width={96}
+          height={96}
           loading="lazy"
+          decoding="async"
           className="size-10 shrink-0 opacity-80"
         />
         <p className="min-w-0 text-xs text-muted-foreground">
