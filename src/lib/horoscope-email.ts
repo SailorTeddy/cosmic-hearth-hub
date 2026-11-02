@@ -1,14 +1,25 @@
 import { Resend } from "resend";
 import { FAMILY_BIRTHDAYS, type FamilyMember } from "@/data/family";
 import { dailyReading, getZodiacSign, type DailyReading, type ZodiacSign } from "@/lib/astrology";
+import { redactEmail } from "@/lib/security";
 
 export type PersonEmailResult = {
   id: string;
   name: string;
+  /** Redacted in API responses — never return the full address. */
   to: string;
   subject: string;
   sent: boolean;
   reason?: string;
+};
+
+/**
+ * Server-only defaults. Prefer HOROSCOPE_EMAIL_MAP in Vercel env for overrides.
+ * This module must not be imported from client components.
+ */
+const DEFAULT_RECIPIENTS: Record<string, string> = {
+  monica: "Monica.Rentz97@gmail.com",
+  emmanuel: "emmanuellovesall@gmail.com",
 };
 
 export type HoroscopeEmailBatchResult = {
@@ -151,14 +162,18 @@ export async function sendDailyHoroscopeEmail(options?: {
   const date = options?.date ?? new Date();
   const dryRun = options?.dryRun === true;
 
-  // Rebuild with the requested date (recipientsForToday uses "now" for reading day)
   const overrides = emailOverrides();
   const bundles: PersonBundle[] = FAMILY_BIRTHDAYS.flatMap((person) => {
-    const to = (overrides[person.id] || person.email || "").trim();
-    if (!to) return [];
+    const to = (overrides[person.id] || DEFAULT_RECIPIENTS[person.id] || "").trim();
+    if (!to || !to.includes("@")) return [];
     const sign = getZodiacSign(person.month, person.day);
     const reading = dailyReading(sign.name, date);
     return [{ person, sign, reading, to }];
+  });
+
+  const publicResult = (r: Omit<PersonEmailResult, "to"> & { to: string }): PersonEmailResult => ({
+    ...r,
+    to: redactEmail(r.to),
   });
 
   if (bundles.length === 0) {
@@ -172,7 +187,7 @@ export async function sendDailyHoroscopeEmail(options?: {
           to: "",
           subject: "",
           sent: false,
-          reason: "No family emails configured. Add email on a family member or set HOROSCOPE_EMAIL_MAP.",
+          reason: "No family emails configured. Set HOROSCOPE_EMAIL_MAP or DEFAULT_RECIPIENTS.",
         },
       ],
     };
@@ -184,14 +199,14 @@ export async function sendDailyHoroscopeEmail(options?: {
       dryRun: true,
       results: bundles.map((b) => {
         const built = buildPersonHoroscopeEmail(b, date);
-        return {
+        return publicResult({
           id: b.person.id,
           name: b.person.name,
           to: b.to,
           subject: built.subject,
           sent: true,
           reason: "dry-run (not sent)",
-        };
+        });
       }),
     };
   }
@@ -201,14 +216,16 @@ export async function sendDailyHoroscopeEmail(options?: {
     return {
       ok: false,
       dryRun,
-      results: bundles.map((b) => ({
-        id: b.person.id,
-        name: b.person.name,
-        to: b.to,
-        subject: buildPersonHoroscopeEmail(b, date).subject,
-        sent: false,
-        reason: "RESEND_API_KEY is not set",
-      })),
+      results: bundles.map((b) =>
+        publicResult({
+          id: b.person.id,
+          name: b.person.name,
+          to: b.to,
+          subject: buildPersonHoroscopeEmail(b, date).subject,
+          sent: false,
+          reason: "RESEND_API_KEY is not set",
+        }),
+      ),
     };
   }
 
@@ -230,22 +247,26 @@ export async function sendDailyHoroscopeEmail(options?: {
 
     if (error) {
       console.error(`Horoscope email failed for ${bundle.person.name}:`, error);
-      results.push({
-        id: bundle.person.id,
-        name: bundle.person.name,
-        to: bundle.to,
-        subject,
-        sent: false,
-        reason: error.message,
-      });
+      results.push(
+        publicResult({
+          id: bundle.person.id,
+          name: bundle.person.name,
+          to: bundle.to,
+          subject,
+          sent: false,
+          reason: "Delivery failed",
+        }),
+      );
     } else {
-      results.push({
-        id: bundle.person.id,
-        name: bundle.person.name,
-        to: bundle.to,
-        subject,
-        sent: true,
-      });
+      results.push(
+        publicResult({
+          id: bundle.person.id,
+          name: bundle.person.name,
+          to: bundle.to,
+          subject,
+          sent: true,
+        }),
+      );
     }
   }
 

@@ -1,21 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { sendDailyHoroscopeEmail } from "@/lib/horoscope-email";
+import { timingSafeEqualString } from "@/lib/security";
 
 /**
  * Vercel Cron — emails each family member their own daily stars via Resend.
  * Schedule: 11:00 UTC daily ≈ 6am Eastern (7am during daylight saving).
- * Secured with CRON_SECRET (Authorization: Bearer …).
+ * Secured with CRON_SECRET (Authorization: Bearer …). Timing-safe compare.
  *
  * Manual test:
  *   GET /api/cron/horoscope-email?dryRun=1
+ *   Authorization: Bearer $CRON_SECRET
  */
 export const Route = createFileRoute("/api/cron/horoscope-email")({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const secret = process.env.CRON_SECRET;
-        const auth = request.headers.get("authorization");
-        if (!secret || auth !== `Bearer ${secret}`) {
+        const secret = process.env.CRON_SECRET?.trim() ?? "";
+        if (!secret) {
+          console.error("CRON_SECRET is not configured");
+          return new Response("Unauthorized", { status: 401 });
+        }
+
+        const auth = request.headers.get("authorization") ?? "";
+        const expected = `Bearer ${secret}`;
+        if (!timingSafeEqualString(auth, expected)) {
           return new Response("Unauthorized", { status: 401 });
         }
 
@@ -45,7 +53,7 @@ export const Route = createFileRoute("/api/cron/horoscope-email")({
           return Response.json(
             {
               ok: false,
-              reason: error instanceof Error ? error.message : "Email cron failed",
+              reason: "Email cron failed",
             },
             { status: 500 },
           );

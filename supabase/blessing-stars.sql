@@ -124,16 +124,6 @@ begin
       and family_side in ('rentz', 'nichols', 'chosen')
     );
 
-  if not exists (
-    select 1 from pg_policies
-    where schemaname = 'public'
-      and tablename = 'blessing_stars'
-      and policyname = 'blessing_stars_delete_auth'
-  ) then
-    create policy blessing_stars_delete_auth
-      on public.blessing_stars
-      for delete
-      to authenticated
-      using (true);
-  end if;
+  -- Deletes only via service role / dashboard (no authenticated delete policy).
+  drop policy if exists blessing_stars_delete_auth on public.blessing_stars;
 end $$;

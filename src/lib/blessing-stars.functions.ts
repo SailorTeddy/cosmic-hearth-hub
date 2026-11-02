@@ -6,10 +6,11 @@ import {
   MAX_CLUSTER_STARS,
   MIN_CLUSTER_STARS,
 } from "@/lib/blessing-stars";
+import { sanitizePlainText } from "@/lib/security";
 
 const memberSchema = z.object({
-  name: z.string().trim().min(1).max(40),
-  personality: z.string().trim().max(80).default(""),
+  name: z.string().max(80).transform(sanitizePlainText).pipe(z.string().min(1).max(40)),
+  personality: z.string().max(120).default("").transform(sanitizePlainText).pipe(z.string().max(80)),
   color: z
     .string()
     .trim()
@@ -19,8 +20,8 @@ const memberSchema = z.object({
 });
 
 const blessingInput = z.object({
-  name: z.string().trim().min(1).max(60),
-  message: z.string().trim().max(280).default(""),
+  name: z.string().max(120).transform(sanitizePlainText).pipe(z.string().min(1).max(60)),
+  message: z.string().max(400).default("").transform(sanitizePlainText).pipe(z.string().max(280)),
   color: z
     .string()
     .trim()
@@ -33,21 +34,38 @@ const blessingInput = z.object({
 
 function getServerSupabase() {
   const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  // Lovable Cloud injects SUPABASE_ANON_KEY; local/dev often uses VITE_ / PUBLISHABLE_
+  // Publishable / anon only — never fall back to the service role key.
   const key =
     process.env.SUPABASE_PUBLISHABLE_KEY ||
     process.env.SUPABASE_ANON_KEY ||
     process.env.VITE_SUPABASE_ANON_KEY ||
-    process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-    process.env.SUPABASE_SECRET_KEY;
+    process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
   if (!url || !key) {
     throw new Error("Supabase is not configured on the server.");
   }
 
+  if (looksLikeServiceRoleKey(key)) {
+    throw new Error("Refusing to use a Supabase service-role key on this path.");
+  }
+
   return createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
+}
+
+/** Reject accidental service-role wiring — inserts must go through RLS as anon. */
+function looksLikeServiceRoleKey(key: string): boolean {
+  if (key.includes("service_role")) return true;
+  const parts = key.split(".");
+  if (parts.length !== 3) return false;
+  try {
+    const json = atob(parts[1]!.replace(/-/g, "+").replace(/_/g, "/"));
+    const payload = JSON.parse(json) as { role?: string };
+    return payload.role === "service_role";
+  } catch {
+    return false;
+  }
 }
 
 export const submitBlessingStarFn = createServerFn({ method: "POST" })
@@ -74,8 +92,8 @@ export const submitBlessingStarFn = createServerFn({ method: "POST" })
       .single();
 
     if (error) {
-      console.error("Blessing star insert failed:", error);
-      throw new Error(error.message || "Could not place your star.");
+      console.error("Blessing star insert failed:", error.code ?? error.message);
+      throw new Error("Could not place your star. Please try again.");
     }
 
     return { ok: true as const, star: row };

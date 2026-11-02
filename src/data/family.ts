@@ -1,7 +1,9 @@
 /**
  * Family birthdays for the home-page astrology reader.
  * Edit names + month (1–12) + day. Year is optional (only for display age vibes).
- * Optional email → that person gets their own daily stars message.
+ *
+ * Daily email addresses stay server-only (see src/lib/horoscope-email.ts + HOROSCOPE_EMAIL_MAP).
+ * Do not put personal emails in this file — it ships to the browser.
  */
 export type FamilyMember = {
   id: string;
@@ -10,24 +12,10 @@ export type FamilyMember = {
   month: number;
   /** 1–31 */
   day: number;
-  /** Daily personalized horoscope email (omit to skip) */
-  email?: string;
 };
 
 export const FAMILY_BIRTHDAYS: FamilyMember[] = [
-  {
-    id: "monica",
-    name: "Monica",
-    month: 2,
-    day: 15,
-    email: "Monica.Rentz97@gmail.com",
-  },
-  {
-    id: "emmanuel",
-    name: "Emmanuel",
-    month: 8,
-    day: 14,
-    email: "emmanuellovesall@gmail.com",
-  },
+  { id: "monica", name: "Monica", month: 2, day: 15 },
+  { id: "emmanuel", name: "Emmanuel", month: 8, day: 14 },
   { id: "layla", name: "Layla", month: 8, day: 25 },
 ];
