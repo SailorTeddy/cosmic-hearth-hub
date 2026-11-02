@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { sendDailyHoroscopeEmail } from "@/lib/horoscope-email";
 
 /**
- * Vercel Cron — emails the family's daily stars via Resend.
+ * Vercel Cron — emails each family member their own daily stars via Resend.
  * Schedule: 11:00 UTC daily ≈ 6am Eastern (7am during daylight saving).
  * Secured with CRON_SECRET (Authorization: Bearer …).
  *
@@ -26,13 +26,19 @@ export const Route = createFileRoute("/api/cron/horoscope-email")({
           const result = await sendDailyHoroscopeEmail({ dryRun });
           return Response.json(
             {
-              ok: result.sent,
+              ok: result.ok,
               dryRun: result.dryRun,
-              to: result.to,
-              subject: result.subject,
-              reason: result.reason,
+              sent: result.results.filter((r) => r.sent).length,
+              results: result.results.map((r) => ({
+                id: r.id,
+                name: r.name,
+                to: r.to,
+                subject: r.subject,
+                sent: r.sent,
+                reason: r.reason,
+              })),
             },
-            { status: result.sent ? 200 : 500 },
+            { status: result.ok ? 200 : 500 },
           );
         } catch (error) {
           console.error("horoscope-email cron failed", error);
