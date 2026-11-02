@@ -489,7 +489,7 @@ export function ClaimStarDialog({ open, onOpenChange, onStarClaimed }: Props) {
               className="mt-1 size-4 accent-[var(--gold)]"
             />
             <span>
-              I’ve sent a blessing (PayPal, Cash App, registry, or another gift). Place my stars in
+              I’ve sent a blessing (Cash App, Zelle, registry, or another gift). Place my stars in
               the Nichols sky.
             </span>
           </label>

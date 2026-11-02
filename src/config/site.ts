@@ -17,11 +17,12 @@ export type PayLink = {
   note?: string;
 };
 
-export const PAYPAL_POOLS = {
-  /** original family pool */
-  family: "https://www.paypal.com/pool/9pYPCUNolN?sr=wccr",
-  /** general fund / Stripe alternative */
-  general: "https://www.paypal.com/pool/9rkIwuTLkR?sr=wccr",
+/** Primary Cash App for quick-amount gifts */
+export const CASH_APP = {
+  handle: "$SailorTeddy",
+  href: "https://cash.app/$SailorTeddy",
+  amountHref: (amount: number) =>
+    `https://cash.app/$SailorTeddy/${amount.toFixed(2).replace(/\.00$/, "")}`,
 };
 
 /** Baby registries for guests */
@@ -50,16 +51,6 @@ export const PAY_LINKS: PayLink[] = [
     label: "Cash App",
     handle: "$Srentz97",
     href: "https://cash.app/$Srentz97",
-  },
-  {
-    label: "PayPal Pool",
-    handle: "Chip in to the family pool",
-    href: PAYPAL_POOLS.family,
-  },
-  {
-    label: "General Funds",
-    handle: "PayPal Pool — general support",
-    href: PAYPAL_POOLS.general,
   },
   {
     label: "Zelle",

@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Copy, Check, ExternalLink, Heart, AlertCircle, Gift, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { PAY_LINKS, PAYPAL_POOLS, QUICK_GIFTS, BABY_REGISTRIES } from "@/config/site";
+import { PAY_LINKS, CASH_APP, QUICK_GIFTS, BABY_REGISTRIES } from "@/config/site";
 import { GlassCard, MagneticButton } from "@/components/glass";
 import { ClaimStarDialog } from "@/components/ClaimStarDialog";
 import type { BlessingStar } from "@/lib/blessing-stars";
@@ -97,7 +97,7 @@ export function Support({ onStarClaimed }: Props) {
           {QUICK_GIFTS.map((gift) => (
             <a
               key={gift.title}
-              href={PAYPAL_POOLS.general}
+              href={gift.amount > 0 ? CASH_APP.amountHref(gift.amount) : CASH_APP.href}
               target="_blank"
               rel="noreferrer noopener"
               className="group flex flex-col rounded-lg border border-glass-border bg-secondary/60 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-gold/50 hover:shadow-[var(--shadow-glow)]"
@@ -159,7 +159,7 @@ export function Support({ onStarClaimed }: Props) {
           </div>
           {parsed.ok && parsed.value ? (
             <a
-              href={`${PAYPAL_POOLS.general}&amount=${parsed.value.toFixed(2)}`}
+              href={CASH_APP.amountHref(parsed.value)}
               target="_blank"
               rel="noreferrer noopener"
               className="shrink-0"
