@@ -14,6 +14,7 @@ import {
   THREAD_PEOPLE,
   UNIVERSAL_AFFIRMATIONS,
 } from "@/lib/astrology-banks";
+import { skyLabel, skyProseLine, skySnapshot, type SkySnapshot } from "@/lib/sky";
 
 export type ZodiacSign = {
   name: string;
@@ -229,11 +230,14 @@ export type DailyReading = {
   affirmation: string;
   /** The 60-second rite, in order: tune, box, cross, speak, send. */
   rite: Array<{ step: string; text: string }>;
+  /** Real tropical sky used for this reading */
+  sky: SkySnapshot;
+  skyLabel: string;
 };
 
 /**
- * Deterministic daily rite: horoscope prose, an element-matched gateway focus,
- * one spoken line, and a remembrance to send. Changes every calendar day.
+ * Deterministic daily rite anchored to the real sky (sun sign, moon sign, phase)
+ * plus natal sun-sign voice. Changes every calendar day.
  */
 export function dailyReading(signName: string, date = new Date()): DailyReading {
   const sign = ZODIAC.find((s) => s.name === signName);
@@ -243,19 +247,29 @@ export function dailyReading(signName: string, date = new Date()): DailyReading 
   const foci = GATEWAYS.filter((g) => g.elements.includes(elementName));
   const day = dayNumber(date);
   const salt = signOffset(signName);
-  const opener = pick(openers, day, salt, 7);
-  const element = pick(elementLines, day, salt, 11);
-  const thread = dayThread(day, salt);
-  const closing = pick(CLOSINGS, day, salt, 17);
-  const gateway = pick(foci, day, salt, 19);
-  const affirmation = dailyAffirmation(signName, day, salt);
-  const box = pick(BOX_PROMPTS, day, salt, 53);
-  const send = pick(SEND_PROMPTS, day, salt, 59);
+  const sky = skySnapshot(date);
+  // Mix real sky into the salt so picks shift with moon sign/phase, not only civil day.
+  const skySalt =
+    salt +
+    Math.floor(sky.moonLongitude) * 17 +
+    Math.floor(sky.sunLongitude) * 3 +
+    Math.round(sky.illumination * 100);
+  const opener = pick(openers, day, skySalt, 7);
+  const element = pick(elementLines, day, skySalt, 11);
+  const thread = dayThread(day, skySalt);
+  const closing = pick(CLOSINGS, day, skySalt, 17);
+  const gateway = pick(foci, day, skySalt, 19);
+  const affirmation = dailyAffirmation(signName, day, skySalt);
+  const box = pick(BOX_PROMPTS, day, skySalt, 53);
+  const send = pick(SEND_PROMPTS, day, skySalt, 59);
+  const skyLine = skyProseLine(signName, sky, day, skySalt);
 
   return {
-    prose: `${opener} ${element} ${thread} ${closing}`,
+    prose: `${opener} ${element} ${skyLine} ${thread} ${closing}`,
     gateway: { name: gateway.name, line: gateway.line, practice: gateway.practice },
     affirmation,
+    sky,
+    skyLabel: skyLabel(sky),
     rite: [
       { step: "Tune", text: "Three slow breaths out, humming low. Let the chest buzz." },
       { step: "Box", text: `Set down ${box}. It will keep until you choose to open it.` },

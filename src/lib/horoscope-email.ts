@@ -75,6 +75,8 @@ export function buildPersonHoroscopeEmail(
     `Hey ${person.name} — your Nichols Family stars for ${dateLabel}`,
     "",
     `${sign.symbol} ${sign.name} · ${sign.element}`,
+    reading.skyLabel,
+    "",
     reading.prose,
     "",
     `Gateway · ${reading.gateway.name}`,
@@ -99,7 +101,8 @@ export function buildPersonHoroscopeEmail(
           The Nichols Family
         </p>
         <h1 style="margin:0 0 8px;font-size:28px;color:#f5e6c8">${escapeHtml(person.name)}'s stars</h1>
-        <p style="margin:0 0 24px;color:#b7a9c9">${escapeHtml(dateLabel)}</p>
+        <p style="margin:0 0 8px;color:#b7a9c9">${escapeHtml(dateLabel)}</p>
+        <p style="margin:0 0 24px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#9a8fb0">${escapeHtml(reading.skyLabel)}</p>
 
         <section style="margin:0 0 22px;padding:20px 22px;border-radius:16px;background:#161022;border:1px solid rgba(212,175,55,0.28)">
           <p style="margin:0 0 6px;font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#d4af37">

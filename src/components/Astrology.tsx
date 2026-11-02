@@ -73,8 +73,8 @@ export function Astrology() {
       <header className="mb-8 text-center">
         <h2 className="gold-text text-3xl font-bold sm:text-4xl">Family Stars</h2>
         <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
-          A horoscope, a gateway focus, one line to say out loud, and someone to remember. Fresh at
-          midnight — deep enough that the combinations can run for years without feeling recycled.
+          Anchored to today&apos;s real sun, moon, and phase — plus a gateway focus, one line to say
+          out loud, and someone to remember. Fresh at midnight.
         </p>
       </header>
 
@@ -143,6 +143,9 @@ export function Astrology() {
               <Sparkles className="size-3.5" />
               Today&apos;s reading
             </div>
+            <p className="mb-3 text-[0.7rem] tracking-[0.14em] text-muted-foreground uppercase sm:text-xs">
+              {selected.reading.skyLabel}
+            </p>
             <p className="text-base leading-relaxed text-champagne/95 sm:text-lg">
               {selected.reading.prose}
             </p>
