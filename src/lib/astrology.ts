@@ -1,12 +1,19 @@
 import {
-  AFFIRMATIONS,
+  AFFIRMATION_SEEDS,
+  AFFIRM_OBJECTS,
+  AFFIRM_STEMS,
+  AFFIRM_TAILS,
   BOX_PROMPTS,
   CLOSINGS,
-  DAY_THREADS,
+  DAY_THREAD_SEEDS,
   ELEMENT_LINES,
   SEND_PROMPTS,
   SIGN_OPENERS,
-} from "@/lib/astrology-content";
+  THREAD_ACTIONS,
+  THREAD_MIDDLES,
+  THREAD_PEOPLE,
+  UNIVERSAL_AFFIRMATIONS,
+} from "@/lib/astrology-banks";
 
 export type ZodiacSign = {
   name: string;
@@ -175,12 +182,45 @@ function dayNumber(date: Date): number {
 }
 
 /**
- * Walk each pool once per day. Full reading repeats only at LCM of pool lengths
- * (thousands of years for prose). `stream` primes stagger components per sign.
+ * Walk each pool once per day. Full reading repeats only at LCM of pool lengths.
+ * `stream` primes stagger components per sign.
  */
 function pick<T>(list: T[], day: number, salt: number, stream: number): T {
   const idx = (((day + Math.imul(salt, stream)) % list.length) + list.length) % list.length;
   return list[idx];
+}
+
+/** Compose remembrance threads so the middle line stays fresh for years. */
+function dayThread(day: number, salt: number): string {
+  // ~2/5 of days use a handcrafted seed; the rest compose action + person + coda.
+  if ((day + salt) % 5 < 2) {
+    return pick(DAY_THREAD_SEEDS, day, salt, 13);
+  }
+  const action = pick(THREAD_ACTIONS, day, salt, 41);
+  const person = pick(THREAD_PEOPLE, day, salt, 43);
+  const middle = pick(THREAD_MIDDLES, day, salt, 47);
+  return `${action} ${person}. ${middle}`;
+}
+
+/**
+ * Affirmations: mostly handcrafted seeds + universal lines; some days compose
+ * from stem/object/tail so the spoken line can stay unique for years.
+ *
+ * Approx unique spoken lines per sign:
+ * seeds(~20) + universal(~67) + stems(8)×objects(20)×tails(20) ≈ 3,200+
+ */
+function dailyAffirmation(signName: string, day: number, salt: number): string {
+  const seeds = AFFIRMATION_SEEDS[signName] ?? AFFIRMATION_SEEDS.Leo;
+  const stems = AFFIRM_STEMS[signName] ?? AFFIRM_STEMS.Leo;
+  const objects = AFFIRM_OBJECTS[signName] ?? AFFIRM_OBJECTS.Leo;
+  // 0–2: curated seed, 3: universal, 4–6: composed (majority composed for longevity)
+  const mode = (day + salt) % 7;
+  if (mode <= 2) return pick(seeds, day, salt, 23);
+  if (mode === 3) return pick(UNIVERSAL_AFFIRMATIONS, day, salt, 29);
+  const stem = pick(stems, day, salt, 31);
+  const object = pick(objects, day, salt, 37);
+  const tail = pick(AFFIRM_TAILS, day, salt, 41);
+  return `${stem} ${object}, ${tail}`;
 }
 
 export type DailyReading = {
@@ -194,27 +234,23 @@ export type DailyReading = {
 /**
  * Deterministic daily rite: horoscope prose, an element-matched gateway focus,
  * one spoken line, and a remembrance to send. Changes every calendar day.
- *
- * Content pools are large enough that full prose combinations last centuries
- * before a theoretical repeat; affirmations alone have ~400 lines per sign.
  */
 export function dailyReading(signName: string, date = new Date()): DailyReading {
   const sign = ZODIAC.find((s) => s.name === signName);
   const elementName = sign?.element ?? "Fire";
   const openers = SIGN_OPENERS[signName] ?? SIGN_OPENERS.Leo;
-  const affirmations = AFFIRMATIONS[signName] ?? AFFIRMATIONS.Leo;
   const elementLines = ELEMENT_LINES[elementName];
   const foci = GATEWAYS.filter((g) => g.elements.includes(elementName));
   const day = dayNumber(date);
   const salt = signOffset(signName);
   const opener = pick(openers, day, salt, 7);
   const element = pick(elementLines, day, salt, 11);
-  const thread = pick(DAY_THREADS, day, salt, 13);
+  const thread = dayThread(day, salt);
   const closing = pick(CLOSINGS, day, salt, 17);
   const gateway = pick(foci, day, salt, 19);
-  const affirmation = pick(affirmations, day, salt, 23);
-  const box = pick(BOX_PROMPTS, day, salt, 29);
-  const send = pick(SEND_PROMPTS, day, salt, 31);
+  const affirmation = dailyAffirmation(signName, day, salt);
+  const box = pick(BOX_PROMPTS, day, salt, 53);
+  const send = pick(SEND_PROMPTS, day, salt, 59);
 
   return {
     prose: `${opener} ${element} ${thread} ${closing}`,

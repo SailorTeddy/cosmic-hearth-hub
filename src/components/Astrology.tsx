@@ -158,7 +158,7 @@ export function Astrology() {
 
             <blockquote className="mt-4 border-l-2 border-gold/50 pl-4">
               <p className="text-[0.65rem] font-semibold tracking-[0.22em] text-muted-foreground uppercase">
-                Say this once
+                Say this once · {today.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
               </p>
               <p className="mt-2 text-base leading-relaxed text-champagne italic sm:text-lg">
                 “{selected.reading.affirmation}”
