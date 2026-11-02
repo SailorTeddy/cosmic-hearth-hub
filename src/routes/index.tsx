@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { CosmicBackground } from "@/components/CosmicBackground";
 import { Hero } from "@/components/Hero";
-import { Journal } from "@/components/Journal";
 import { Astrology } from "@/components/Astrology";
 import { Support } from "@/components/Support";
 import { Guestbook } from "@/components/Guestbook";
@@ -12,7 +11,7 @@ import type { BlessingStar } from "@/lib/blessing-stars";
 
 const TITLE = "The Nichols Family";
 const DESCRIPTION =
-  "Family updates, milestones and space to connect. The Nichols Family is our little corner of the universe — journal entries, photos, a guestbook and a way to send a blessing.";
+  "The Nichols Family is our little corner of the universe — a guestbook, daily sky readings, and a way to send a blessing.";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -70,7 +69,6 @@ function Index() {
       <main className="relative z-10">
         <Hero />
         <Support onStarClaimed={onStarClaimed} />
-        <Journal />
         <Astrology />
         <Guestbook />
       </main>

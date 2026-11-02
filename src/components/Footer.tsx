@@ -15,10 +15,7 @@ export function Footer() {
           className="size-10 shrink-0 opacity-80"
         />
         <p className="min-w-0 text-xs text-muted-foreground">
-          The Nichols Family — emnichols.com. Built with warm light and a lot of stars.{" "}
-          <a href="/admin" className="opacity-40 transition-opacity hover:opacity-80">
-            Family login
-          </a>
+          The Nichols Family — emnichols.com. Built with warm light and a lot of stars.
         </p>
       </div>
     </footer>
