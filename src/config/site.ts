@@ -24,11 +24,11 @@ export const PAYPAL_POOLS = {
   general: "https://www.paypal.com/pool/9rkIwuTLkR?sr=wccr",
 };
 
-/** Amazon housewarming / home registry for guests */
+/** Amazon baby registry for guests */
 export const HOUSEWARMING_REGISTRY = {
-  label: "Housewarming Gift List",
-  blurb: "Picking out something for the new place? Our Amazon registry has ideas big and small.",
-  href: "https://www.amazon.com/registries/gl/guest-view/3MPL0PZAX2CAE",
+  label: "Baby Registry",
+  blurb: "Welcoming our little one in January 2027? Monica's Amazon baby registry has ideas big and small.",
+  href: "https://www.amazon.com/baby-reg/monica-rentz-january-2027-cincinnati/2L483C92ZN5N1?ref_=cm_sw_r_cp_ud_dp_4V92RT81Y6RX9AW95MG5",
 };
 
 export const PAY_LINKS: PayLink[] = [
