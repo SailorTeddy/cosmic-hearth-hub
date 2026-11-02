@@ -15,7 +15,13 @@ export type FamilyMember = {
 };
 
 export const FAMILY_BIRTHDAYS: FamilyMember[] = [
-  { id: "monica", name: "Monica", month: 2, day: 15 },
+  {
+    id: "monica",
+    name: "Monica",
+    month: 2,
+    day: 15,
+    email: "Monica.Rentz97@gmail.com",
+  },
   {
     id: "emmanuel",
     name: "Emmanuel",
