@@ -73,8 +73,8 @@ export function Astrology() {
       <header className="mb-8 text-center">
         <h2 className="gold-text text-3xl font-bold sm:text-4xl">Family Stars</h2>
         <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
-          A horoscope, a gateway focus, one line to say out loud, and someone to remember. Fresh
-          at midnight.
+          A horoscope, a gateway focus, one line to say out loud, and someone to remember. Fresh at
+          midnight — deep enough that the combinations can run for years without feeling recycled.
         </p>
       </header>
 
